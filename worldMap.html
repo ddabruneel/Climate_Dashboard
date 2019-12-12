@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="EN">
+<head>
+  <meta charset="utf-8">
+  <title>World Map</title>
+  <link rel="stylesheet" type="text/css" href="css/dc.css" />
+  <style>
+    body, html {
+      height: 100%;
+      margin: 10;
+      padding: 0;
+    }
+    div {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script type="text/javascript" src="js/d3_3517.js"></script>
+  <script type="text/javascript" src="js/crossfilter.js"></script>
+  <script type="text/javascript" src="js/dc.js"></script>
+
+  <script type="text/javascript">
+
+  function print_filter(filter) {
+    var f=eval(filter);
+    if (typeof(f.length) != "undefined") {}else{}
+    if (typeof(f.top) != "undefined") {f=f.top(Infinity);}else{}
+    if (typeof(f.dimension) != "undefined") {f=f.dimension(function(d) { return "";}).top(Infinity);}else{}
+    console.log(filter+"("+f.length+") = "+JSON.stringify(f).replace("[","[\n\t").replace(/}\,/g,"},\n\t").replace("]","\n]"));
+  }
+
+  var usChart = dc.geoChoroplethChart("#map");
+
+//  d3.tsv("data/world-data.tsv",function(error,data){
+
+d3.csv("data/Country_Annex_One_GHG_Total.csv", function(error,data){
+    var facts = crossfilter(data);
+
+    var countries = facts.dimension(function(d){ return d.Party; });
+    var countryGroup = countries.group().reduceSum(function(d){ return +d.Year_2017; });
+
+
+
+    d3.json("data/world.geo.json",function(error2,statesJson){
+
+      var projection = d3.geo.mercator().scale(120).translate([400,200]);
+
+
+        usChart
+          .width(1360)
+          .height(500)
+          .dimension(countries)
+          .projection(projection)
+          .group(countryGroup)
+          .colors(d3.scale.category10())
+          .colorDomain([0,3])
+          .colorCalculator(function(d){ return d ? usChart.colors()(d) : '#ccc'; })
+          .overlayGeoJson(statesJson.features,"state",function(d){
+            return d.properties.name;
+          });
+
+          dc.renderAll();
+
+    })
+    
+  console.log(data);
+  // console.log(facts);
+  //print_filter('facts');
+    
+
+  })
+
+
+
+
+
+  </script>
+
+</body>
+</html>
