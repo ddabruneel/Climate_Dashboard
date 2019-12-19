@@ -1,84 +1,61 @@
 <!DOCTYPE html>
-<html lang="EN">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>World Map</title>
-  <link rel="stylesheet" type="text/css" href="css/dc.css" />
-  <style>
-    body, html {
-      height: 100%;
-      margin: 10;
-      padding: 0;
-    }
-    div {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Greenhouse Gas Emissions</title>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="map"></div>
-  <script type="text/javascript" src="js/d3_3517.js"></script>
-  <script type="text/javascript" src="js/crossfilter.js"></script>
-  <script type="text/javascript" src="js/dc.js"></script>
-
-  <script type="text/javascript">
-
-  function print_filter(filter) {
-    var f=eval(filter);
-    if (typeof(f.length) != "undefined") {}else{}
-    if (typeof(f.top) != "undefined") {f=f.top(Infinity);}else{}
-    if (typeof(f.dimension) != "undefined") {f=f.dimension(function(d) { return "";}).top(Infinity);}else{}
-    console.log(filter+"("+f.length+") = "+JSON.stringify(f).replace("[","[\n\t").replace(/}\,/g,"},\n\t").replace("]","\n]"));
-  }
-
-  var usChart = dc.geoChoroplethChart("#map");
-
-//  d3.tsv("data/world-data.tsv",function(error,data){
-
-d3.csv("data/Country_Annex_One_GHG_Total.csv", function(error,data){
-    var facts = crossfilter(data);
-
-    var countries = facts.dimension(function(d){ return d.Party; });
-    var countryGroup = countries.group().reduceSum(function(d){ return +d.Year_2017; });
-
-
-
-    d3.json("data/world.geo.json",function(error2,statesJson){
-
-      var projection = d3.geo.mercator().scale(120).translate([400,200]);
-
-
-        usChart
-          .width(1360)
-          .height(500)
-          .dimension(countries)
-          .projection(projection)
-          .group(countryGroup)
-          .colors(d3.scale.category10())
-          .colorDomain([0,3])
-          .colorCalculator(function(d){ return d ? usChart.colors()(d) : '#ccc'; })
-          .overlayGeoJson(statesJson.features,"state",function(d){
-            return d.properties.name;
-          });
-
-          dc.renderAll();
-
-    })
-    
-  console.log(data);
-  // console.log(facts);
-  //print_filter('facts');
-    
-
-  })
-
-
-
-
-
-  </script>
-
+  <div id="nav">
+    <h2>GHG Dashboard</h2>
+    <p>
+      Explore GHG emissions by year. 
+      Current year: <span id="year-val"></span>
+      <input id="year" type="range" step="1">
+    </p>
+    <p>
+      Choose between total emissions or emissions per capita.
+      <input type="radio" name="data-type" value="emissions" checked>
+      <label>Emissions</label>
+      <input type="radio" name="data-type" value="emissionsPerCapita">
+      <label>Emissions Per Capita</label>
+    </p>
+    <p>Click on a country to see its trends by year.</p>
+      <p> 
+          Choose a Sector, Subsector, or Category
+        <select id="selectSector">
+        </select>
+        <select id="selectSubSector">
+        </select>
+        <select id="selectCategory">
+        </select>
+      
+      </p>
+  </div>
+  <section class="container">
+    <div class="chart-container">
+    <svg 
+      version="1.1"
+      baseProfile="full"
+      xmlns="http://www.w3.org/2000/svg" 
+      id="map">
+    </svg>
+  </div>
+  <div class="chart-container right">
+    <svg 
+      version="1.1"
+      baseProfile="full"
+      xmlns="http://www.w3.org/2000/svg" 
+      id="bar">
+    </svg>
+  </div>
+  </section>
+  <div class="tooltip"></div>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  <script src="js/bar.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
