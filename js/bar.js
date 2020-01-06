@@ -33,36 +33,38 @@ function highlightBars(year) {
 
 function drawBar(data, dataType, country) {
     
-    var IsSector = d3.select("#selectSector")
-                        .node().value;
+console.log(data);    
+//    var IsSector = d3.select("#selectSector")
+//                        .node().value;
 
 // fetch data
-if (IsSector === "All") { 
-    // Aggregate data by Country, year
-    var climateData = [];
-    data.reduce(function(res, value) {
-      if (!res[value.group]) {
-        res[value.group] = { group: value.group, country: value.country, countryCode: value.countryCode, year: value.year, emissions: 0, emissionsPerCapita: 0 };
-        climateData.push(res[value.group]);
-      }
-      res[value.group].emissions += value.emissions;
-      res[value.group].emissionsPerCapita += value.emissionsPerCapita;    
-      return res;
-    }, {});  
-} else {
-    // Aggregate data by Country, year and Sector Level 1
-    var climateData_L1 = [];
-    data.reduce(function(res, value) {
-      if (!res[value.group_L1]) {
-        res[value.group_L1] = { group_L1: value.group_L1, country: value.country, countryCode: value.countryCode, year: value.year, Mapping_L1: value.Mapping_L1, emissions: 0, emissionsPerCapita: 0};
-        climateData_L1.push(res[value.group_L1]);
-      }
-      res[value.group_L1].emissions += value.emissions;
-      res[value.group_L1].emissionsPerCapita += value.emissionsPerCapita;    
-      return res;
-    }, {});    
-    var climateData = climateData_L1.filter(row => row.Mapping_L1 === IsSector);
-};
+    var climateData = data;
+//if (IsSector === "All") { 
+//    // Aggregate data by Country, year
+//    var climateData = [];
+//    data.reduce(function(res, value) {
+//      if (!res[value.group]) {
+//        res[value.group] = { group: value.group, country: value.country, countryCode: value.countryCode, year: value.year, emissions: 0, emissionsPerCapita: 0 };
+//        climateData.push(res[value.group]);
+//      }
+//      res[value.group].emissions += value.emissions;
+//      res[value.group].emissionsPerCapita += value.emissionsPerCapita;    
+//      return res;
+//    }, {});  
+//} else {
+//    // Aggregate data by Country, year and Sector Level 1
+//    var climateData_L1 = [];
+//    data.reduce(function(res, value) {
+//      if (!res[value.group_L1]) {
+//        res[value.group_L1] = { group_L1: value.group_L1, country: value.country, countryCode: value.countryCode, year: value.year, Mapping_L1: value.Mapping_L1, emissions: 0, emissionsPerCapita: 0};
+//        climateData_L1.push(res[value.group_L1]);
+//      }
+//      res[value.group_L1].emissions += value.emissions;
+//      res[value.group_L1].emissionsPerCapita += value.emissionsPerCapita;    
+//      return res;
+//    }, {});    
+//    var climateData = climateData_L1.filter(row => row.Mapping_L1 === IsSector);
+//};
 
 // end fetch data
     

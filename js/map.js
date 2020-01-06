@@ -10,36 +10,15 @@ function createMap(width, height) {
       .classed("map-title", true);
 }
 
-function drawMap(geoData, data, year, dataType, IsSector) {
-
+function drawMap(geoData, fulldata, data, currentYear, currentDataType, currentSector, currentSubSector, currentCategory) {
+//       drawMap(geoData, myData, currentYear, currentDataType, currentSector,currentSubSector,currentCategory)
 // fetch data
-if (IsSector === "All") { 
-    // Aggregate data by Country, year
-    var climateData = [];
-    data.reduce(function(res, value) {
-      if (!res[value.group]) {
-        res[value.group] = { group: value.group, country: value.country, countryCode: value.countryCode, year: value.year, emissions: 0, emissionsPerCapita: 0 };
-        climateData.push(res[value.group]);
-      }
-      res[value.group].emissions += value.emissions;
-      res[value.group].emissionsPerCapita += value.emissionsPerCapita;    
-      return res;
-    }, {});  
-} else {
-    // Aggregate data by Country, year and Sector Level 1
-    var climateData_L1 = [];
-    data.reduce(function(res, value) {
-      if (!res[value.group_L1]) {
-        res[value.group_L1] = { group_L1: value.group_L1, country: value.country, countryCode: value.countryCode, year: value.year, Mapping_L1: value.Mapping_L1, emissions: 0, emissionsPerCapita: 0};
-        climateData_L1.push(res[value.group_L1]);
-        //result.push(res[value.ISO3])
-      }
-      res[value.group_L1].emissions += value.emissions;
-      res[value.group_L1].emissionsPerCapita += value.emissionsPerCapita;    
-      return res;
-    }, {});    
-    var climateData = climateData_L1.filter(row => row.Mapping_L1 === IsSector);
-};
+    var climateData = data; 
+    var year = currentYear;
+    var dataType = currentDataType;
+    //var mapCategory = currentCategory;
+    //console.log("entering map, the mapcategory is...", mapCategory);
+    
 // end fetch data
     
   var map = d3.select("#map");
@@ -85,12 +64,20 @@ if (IsSector === "All") {
       .on("click", function() {
         var currentDataType = d3.select("input:checked")
                                 .property("value");
-
-//                                .property("value");
+        var mapSector = d3.select("#selectSector")
+                                .property("value");
+        var mapSubSector = d3.select("#selectSubSector")
+                                .property("value");
+        var mapCategory = d3.select("#selectCategory")
+                                .property("value");
         var country = d3.select(this);
         var isActive = country.classed("active");
         var countryName = isActive ? "" : country.data()[0].properties.country;
-        drawBar(data, currentDataType, countryName);
+            // dataPrep(data, year, sector, subsector, category, globalOrPerCapita)
+            console.log("calling dataprep, catCat is now...",mapCategory);
+            myData = dataPrep(fulldata, currentYear,mapSector,mapSubSector,mapCategory,currentDataType);  
+            //console.log(myData);
+            drawBar(myData, currentDataType, countryName);
         highlightBars(+d3.select("#year").property("value"));
         d3.selectAll(".country").classed("active", false);
         country.classed("active", !isActive);
