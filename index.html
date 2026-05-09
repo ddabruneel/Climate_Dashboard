@@ -2,38 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Greenhouse Gas Emissions</title>
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div id="mySidenav" class="sidenav">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <p>Since 1990, 43 mainly developed countries agreed to submit a detailed annual inventory of their greenhouse gas emission.</p>
-      <p>Reliable, complete and detailed datasets about climate change are still not readily available. The premise of this dashboard is to give everyone an opportunity to "play with the data", comparing historical consumption by country, by sector, sub-sector, etc. </p>
-      <p>The dataset presented here is an extraction from the official UN organization, UNFCCC website: <a href="https://di.unfccc.int/time_series"> https://di.unfccc.int/time_series </a></p>
-      <p>The extractor used comes from this team: <a href="https://github.com/openclimatedata/unfccc-detailed-data-by-party">Data Package with UNFCCC emissions data</a></p>
+  <div id="mySidenav" class="sidenav">
+    <a href="#" class="closebtn" id="close-nav">&times;</a>
+    <p>Since 1990, 43 mainly developed countries agreed to submit a detailed annual inventory of their greenhouse gas emission.</p>
+    <p>Reliable, complete and detailed datasets about climate change are still not readily available. The premise of this dashboard is to give everyone an opportunity to "play with the data", comparing historical consumption by country, by sector, sub-sector, etc.</p>
+    <p>The dataset presented here is an extraction from the official UN organization, UNFCCC website: <a href="https://di.unfccc.int/time_series">https://di.unfccc.int/time_series</a></p>
+    <p>The extractor used comes from this team: <a href="https://github.com/openclimatedata/unfccc-detailed-data-by-party">Data Package with UNFCCC emissions data</a></p>
+  </div>
 
-    </div>
-
-
-<script>
-function openNav() {
-  document.getElementById("mySidenav").style.width = "450px";
-}
-
-function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";
-}
-</script>
-    
-    
-    <div id="nav">
-
-    <h2><span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span> GHG Dashboard</h2>
+  <div id="nav">
+    <h2><span id="open-nav" style="font-size:30px;cursor:pointer">&#9776;</span> GHG Dashboard</h2>
     <p>
-      Explore GHG emissions by year. 
+      Explore GHG emissions by year.
       Current year: <span id="year-val"></span>
       <input id="year" type="range" step="1">
     </p>
@@ -45,39 +32,29 @@ function closeNav() {
       <label>Emissions Per Capita</label>
     </p>
     <p>Click on a country to see its trends by year.</p>
-      <p> 
-          Choose a Sector, Subsector, or Category
-        <select id="selectSector">
-        </select>
-        <select id="selectSubSector">
-        </select>
-        <select id="selectCategory">
-        </select>
-      </p>
-      <p>
-         <a href="https://github.com/ddabruneel/Climate_Dashboard" style="color:#FF0000;" target="_blank">code source</a>
-      </p>
+    <p>
+      Choose a Sector, Subsector, or Category
+      <select id="selectSector"></select>
+      <select id="selectSubSector"></select>
+      <select id="selectCategory"></select>
+    </p>
+    <p>
+      <a href="https://github.com/ddabruneel/Climate_Dashboard" style="color:#FF0000;" target="_blank">code source</a>
+    </p>
   </div>
+
   <section class="container">
     <div class="chart-container">
-    <svg 
-      version="1.1"
-      baseProfile="full"
-      xmlns="http://www.w3.org/2000/svg" 
-      id="map">
-    </svg>
-  </div>
-  <div class="chart-container right">
-    <svg 
-      version="1.1"
-      baseProfile="full"
-      xmlns="http://www.w3.org/2000/svg" 
-      id="bar">
-    </svg>
-  </div>
+      <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" id="map"></svg>
+    </div>
+    <div class="chart-container right">
+      <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" id="bar"></svg>
+    </div>
   </section>
+
   <div class="tooltip"></div>
-  <script src="https://d3js.org/d3.v4.js"></script>
+
+  <script src="https://d3js.org/d3.v7.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
   <script src="js/bar.js"></script>
   <script src="js/map.js"></script>

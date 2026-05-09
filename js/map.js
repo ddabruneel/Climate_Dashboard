@@ -1,97 +1,83 @@
 function createMap(width, height) {
   d3.select("#map")
-      .attr("width", width)
-      .attr("height", height)
+    .attr("width", width)
+    .attr("height", height)
     .append("text")
-      .attr("x", width / 2)
-      .attr("y", "1em")
-      .attr("font-size", "1.5em")
-      .style("text-anchor", "middle")
-      .classed("map-title", true);
+    .attr("x", width / 2)
+    .attr("y", "1em")
+    .attr("font-size", "1.5em")
+    .style("text-anchor", "middle")
+    .classed("map-title", true);
 }
 
 function drawMap(geoData, fulldata, data, currentYear, currentDataType, currentSector, currentSubSector, currentCategory) {
-//       drawMap(geoData, myData, currentYear, currentDataType, currentSector,currentSubSector,currentCategory)
-// fetch data
-    var climateData = data; 
-    var year = currentYear;
-    var dataType = currentDataType;
-    //var mapCategory = currentCategory;
-    //console.log("entering map, the mapcategory is...", mapCategory);
-    
-// end fetch data
-    
-  var map = d3.select("#map");
+  const climateData = data;
+  const year = currentYear;
+  const dataType = currentDataType;
 
-  var projection = d3.geoMercator()
-                     .scale(110)
-                     .translate([
-                       +map.attr("width") / 2,
-                       +map.attr("height") / 1.4
-                     ]);
+  const map = d3.select("#map");
 
-  var path = d3.geoPath()
-               .projection(projection);
+  const projection = d3.geoMercator()
+    .scale(110)
+    .translate([
+      +map.attr("width") / 2,
+      +map.attr("height") / 1.4
+    ]);
+
+  const path = d3.geoPath().projection(projection);
 
   d3.select("#year-val").text(year);
 
   geoData.forEach(d => {
-    var countries = climateData.filter(row => row.countryCode === d.id);
-    var name = '';
+    const countries = climateData.filter(row => row.countryCode === d.id);
+    let name = "";
     if (countries.length > 0) name = countries[0].country;
     d.properties = countries.find(c => c.year === year) || { country: name };
   });
 
-  var colors = ["#f1c40f", "#e67e22", "#e74c3c", "#c0392b"];
+  const colors = ["#f1c40f", "#e67e22", "#e74c3c", "#c0392b"];
 
-  var domains = {
+  const domains = {
     emissions: [0, 2.5e5, 1e6, 5e6],
     emissionsPerCapita: [0, 0.5, 2, 10]
   };
 
-  var mapColorScale = d3.scaleLinear()
-                        .domain(domains[dataType])
-                        .range(colors);
+  const mapColorScale = d3.scaleLinear()
+    .domain(domains[dataType])
+    .range(colors);
 
-  var update = map.selectAll(".country")
-                  .data(geoData);
+  const update = map.selectAll(".country").data(geoData);
 
   update
     .enter()
     .append("path")
-      .classed("country", true)
-      .attr("d", path)
-      .on("click", function() {
-        var currentDataType = d3.select("input:checked")
-                                .property("value");
-        var mapSector = d3.select("#selectSector")
-                                .property("value");
-        var mapSubSector = d3.select("#selectSubSector")
-                                .property("value");
-        var mapCategory = d3.select("#selectCategory")
-                                .property("value");
-        var country = d3.select(this);
-        var isActive = country.classed("active");
-        var countryName = isActive ? "" : country.data()[0].properties.country;
-            // dataPrep(data, year, sector, subsector, category, globalOrPerCapita)
-            console.log("calling dataprep, catCat is now...",mapCategory);
-            myData = dataPrep(fulldata, currentYear,mapSector,mapSubSector,mapCategory,currentDataType);  
-            //console.log(myData);
-            drawBar(myData, currentDataType, countryName);
-        highlightBars(+d3.select("#year").property("value"));
-        d3.selectAll(".country").classed("active", false);
-        country.classed("active", !isActive);
-      })
+    .classed("country", true)
+    .attr("d", path)
+    .on("click", function(event, d) {
+      const clickedDataType = d3.select("input:checked").property("value");
+      const clickedYear = +d3.select("#year").property("value");
+      const mapSector = d3.select("#selectSector").property("value");
+      const mapSubSector = d3.select("#selectSubSector").property("value");
+      const mapCategory = d3.select("#selectCategory").property("value");
+      const country = d3.select(this);
+      const isActive = country.classed("active");
+      const countryName = isActive ? "" : country.data()[0].properties.country;
+      const myData = dataPrep(fulldata, clickedYear, mapSector, mapSubSector, mapCategory, clickedDataType);
+      drawBar(myData, clickedDataType, countryName);
+      highlightBars(clickedYear);
+      d3.selectAll(".country").classed("active", false);
+      country.classed("active", !isActive);
+    })
     .merge(update)
-      .transition()
-      .duration(750)
-      .attr("fill", d => {
-        var val = d.properties[dataType];
-        return val ? mapColorScale(val) : "#ccc";
-      });
+    .transition()
+    .duration(750)
+    .attr("fill", d => {
+      const val = d.properties[dataType];
+      return val ? mapColorScale(val) : "#ccc";
+    });
 
   d3.select(".map-title")
-      .text("Carbon dioxide " + graphTitle(dataType) + ", " + year);
+    .text("Carbon dioxide " + graphTitle(dataType) + ", " + year);
 }
 
 function graphTitle(str) {
